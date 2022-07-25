@@ -2,9 +2,15 @@
 const body = document.body;
 const showQuestion = document.createElement("div");
 showQuestion.classList.add("container", "quiz-box");
+let nocheckbox = 0;
 
-// body.append(div_2);
-
+function setAttributes(ele, attributes) {
+  for (let keys in attributes) {
+    let id_name = keys;
+    let value = attributes[keys];
+    ele.setAttribute(id_name, value);
+  }
+}
 // To get data questions sets from Quiz API
 const getQuestions = function () {
   fetch(
@@ -25,12 +31,48 @@ gameStart.addEventListener("click", () => {
 
 function Questions(set) {
   showQuestion.innerHTML = ``;
-  // let currentQuestion = set[0].question.toString();
-  // console.log(currentQuestion);
   const currentQuestion = document.createElement("div");
   currentQuestion.classList.add("question", "quiz-box");
   currentQuestion.innerText = `Question: ${set[0].question}`;
   showQuestion.append(currentQuestion);
+  let options = document.createElement("div");
+  options.classList.add("options", "container");
+  let qoptions = set[0].answers;
+  let answerList = set[0].correct_answers;
+
+  function getKeyByValue(object, value) {
+    return Object.keys(object).find((key) => object[key] === value);
+  }
+  let rightAnswer = getKeyByValue(answerList, "true");
+  rightAnswer = rightAnswer.slice(0, -8);
+
+  for (let keys in qoptions) {
+    if (qoptions[keys] !== null) {
+      const input_options = document.createElement("input");
+      setAttributes(input_options, {
+        name: "grp1",
+        type: "radio",
+        value: `${qoptions[keys]}`,
+        id: `${keys}`,
+      });
+
+      const inputLabel = document.createElement("label");
+      setAttributes(inputLabel, { for: `${keys}` });
+      inputLabel.innerText = `${qoptions[keys]}`;
+      let skipLine = document.createElement("br");
+      options.append(input_options, inputLabel, skipLine);
+    }
+  }
+
+  showQuestion.append(options);
+  const checkAnswer = document.createElement("div");
+  checkAnswer.classList.add("next-question");
+  showQuestion.append(checkAnswer);
+  const checkAnswerButton = document.createElement("button");
+  checkAnswerButton.classList.add("next-btn");
+  checkAnswerButton.setAttribute("id", "check");
+  checkAnswerButton.innerText = "Check answer";
+  checkAnswer.append(checkAnswerButton);
   const nextQuestion = document.createElement("div");
   nextQuestion.classList.add("next-question");
   showQuestion.append(nextQuestion);
@@ -40,59 +82,42 @@ function Questions(set) {
   nextButton.innerText = "Next Question";
   nextQuestion.append(nextButton);
 
-  //   showQuestion.innerHTML = `
-  // <div class="question">
-  //   Question:
-  //   "${currentQuestion}"
-  // </div>
-  // <div class="next-question"><button class="next-btn" id="next">Next Question</button></div>`);
   body.append(showQuestion);
+  const checkBtn = document.querySelector("#check");
+  const title = document.querySelector(".title-box");
+  checkBtn.addEventListener("click", () => {
+    const radioButtons = document.querySelectorAll('input[name="grp1"]');
+
+    for (const radioButton of radioButtons) {
+      if (radioButton.checked) {
+        if (radioButton.id == rightAnswer) {
+          title.innerText = "Correct";
+          title.style.backgroundColor = "green";
+        } else {
+          title.style.backgroundColor = "red";
+          title.innerText = "InCorrect";
+        }
+      } else {
+        nocheckbox += 1;
+      }
+    }
+    if (nocheckbox === radioButtons.length) alert("Please choose an option");
+  });
   // const nextQuestion = document.getElementById("next");
   nextQuestion.addEventListener("click", () => {
+    title.innerText = "It's time Lets play JavaScript Quiz!!!!!!!";
+    title.style.backgroundColor = "#2e0249";
     showQuestion.innerHTML = ``;
     set.shift();
-    if (set.length === 0) return;
-    Questions(set);
+    if (set.length === 0) {
+      showQuestion.classList.add("hidden");
+      title.innerText = "Thats all for the day, Come Again";
+      title.style.backgroundColor = "#5902EC";
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    } else {
+      Questions(set);
+    }
   });
-  console.log(set);
 }
-// To process the API
-
-// function displayCharacters(data) {
-//   let searchArea = document.querySelector(".search-columns");
-//   searchArea.innerHTML = `<div class = "imageText">Please click the image of the character to see the related details/comics</div>`;
-//   let searchButton = document.querySelector(".search-columns2");
-//   searchButton.innerHTML = `<button id="return-button" class="search-btn">return</button>
-//   </div>`;
-//   let returnButton = document.querySelector("#return-button");
-//   returnButton.addEventListener("click", () => {
-//     location.reload();
-//   });
-//   div_2.innerHTML = ``;
-//   for (let characters of data) {
-//     const div_3 = document.createElement("div");
-//     div_3.classList.add("card", "h-100", "col-lg-4", "col-sm-12");
-//     div_2.append(div_3);
-//     const div_4 = document.createElement("div");
-//     div_4.classList.add("card-header", "text-center", "name");
-//     div_4.textContent = `${characters?.name}`;
-//     div_3.append(div_4);
-//     const anchor = document.createElement("a");
-//     anchor.setAttribute("href", `${characters?.urls[0].url}`);
-//     anchor.setAttribute("target", "blank");
-//     div_3.append(anchor);
-//     const img = document.createElement("img");
-//     img.classList.add("card-img-top", "flag", "mt-3");
-//     img.setAttribute(
-//       "src",
-//       `${characters?.thumbnail?.path}/portrait_fantastic.${characters?.thumbnail?.extension}`
-//     );
-//     anchor.append(img);
-//   }
-// }
-
-// const button = document.getElementById("submit-button");
-// button.addEventListener("click", () => {
-//   var input = document.getElementById("charName").value;
-//   getCharacters(input);
-// });
