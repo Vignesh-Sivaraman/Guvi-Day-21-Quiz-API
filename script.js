@@ -106,7 +106,7 @@ function Questions(set) {
   });
   // To switch to next Question
   nextQuestion.addEventListener("click", () => {
-    title.innerText = "Crack on";
+    title.innerText = "Crack on!!!";
     title.style.backgroundColor = "#2e0249";
     showQuestion.innerHTML = ``;
     set.shift();
