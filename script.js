@@ -2,7 +2,7 @@
 const body = document.body;
 const showQuestion = document.createElement("div");
 showQuestion.classList.add("container", "quiz-box");
-let nocheckbox = 0;
+let nocheckbox = 0; // to check if all radio buttons are checked
 
 function setAttributes(ele, attributes) {
   for (let keys in attributes) {
@@ -23,6 +23,7 @@ const getQuestions = function () {
     .catch((err) => console.error(err));
 };
 
+// To start the game
 const gameStart = document.getElementById("play");
 gameStart.addEventListener("click", () => {
   getQuestions();
@@ -39,13 +40,13 @@ function Questions(set) {
   options.classList.add("options", "container");
   let qoptions = set[0].answers;
   let answerList = set[0].correct_answers;
-
+  // To get the right answer
   function getKeyByValue(object, value) {
     return Object.keys(object).find((key) => object[key] === value);
   }
   let rightAnswer = getKeyByValue(answerList, "true");
   rightAnswer = rightAnswer.slice(0, -8);
-
+  // To get options
   for (let keys in qoptions) {
     if (qoptions[keys] !== null) {
       const input_options = document.createElement("input");
@@ -85,9 +86,9 @@ function Questions(set) {
   body.append(showQuestion);
   const checkBtn = document.querySelector("#check");
   const title = document.querySelector(".title-box");
+  // To check answer
   checkBtn.addEventListener("click", () => {
     const radioButtons = document.querySelectorAll('input[name="grp1"]');
-
     for (const radioButton of radioButtons) {
       if (radioButton.checked) {
         if (radioButton.id == rightAnswer) {
@@ -103,7 +104,7 @@ function Questions(set) {
     }
     if (nocheckbox === radioButtons.length) alert("Please choose an option");
   });
-  // const nextQuestion = document.getElementById("next");
+  // To switch to next Question
   nextQuestion.addEventListener("click", () => {
     title.innerText = "It's time Lets play JavaScript Quiz!!!!!!!";
     title.style.backgroundColor = "#2e0249";
